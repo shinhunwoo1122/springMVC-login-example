@@ -1,5 +1,7 @@
-package hello.login.domain.member;
+package hello.login.web.member;
 
+import hello.login.domain.member.Member;
+import hello.login.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -28,6 +30,7 @@ public class MemberController {
         if(bindingResult.hasErrors()){
             return "members/addMemberForm";
         }
+
         memberRepository.save(member);
         return "redirect:/";
 
