@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -28,9 +29,9 @@ public class HomeController {
     }
 
     //@GetMapping("/")
-    public String homeLogin(@CookieValue(name = "memberId", required = false) Long memberId, Model model){
+    public String homeLogin(@CookieValue(name = "memberId", required = false) Long memberId, Model model) {
 
-        if(memberId == null){
+        if (memberId == null) {
             return "home";
         }
 
@@ -39,7 +40,7 @@ public class HomeController {
 
         log.info("loginMember{}", loginMember);
 
-        if(loginMember == null){
+        if (loginMember == null) {
             return "home";
         }
 
@@ -49,14 +50,14 @@ public class HomeController {
     }
 
     //@GetMapping("/")
-    public String homeLoginV2(HttpServletRequest request, Model model){
+    public String homeLoginV2(HttpServletRequest request, Model model) {
 
         //세션 관리자에 저장된 회원 정보 조회
         Object member
-                = (Member)sessionManager.getSession(request);
+                = (Member) sessionManager.getSession(request);
 
         //로그인
-        if(member == null){
+        if (member == null) {
             return "home";
         }
 
@@ -65,26 +66,41 @@ public class HomeController {
 
     }
 
-    @GetMapping("/")
-    public String homeLoginV3(HttpServletRequest request, Model model){
+    //@GetMapping("/")
+    public String homeLoginV3(HttpServletRequest request, Model model) {
         //session에는 true, false가있다 true인경우 기존에 존재하면 반환 없으면 새로생성함
         //false인 경우 기존에 존재하면 반환하지만 새로 추가하지는 않는다 이를 통해 메모리 낭비를 줄여야한다.
         HttpSession session = request.getSession(false);
 
-        if(session == null){
+        if (session == null) {
             return "home";
         }
 
-        Object loginMember = (Member)session.getAttribute(SessionConst.LOGIN_MEMBER);
+        Object loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
         //세션에 회원 데이터가 없으면 home
-        if(loginMember == null){
+        if (loginMember == null) {
             return "home";
         }
 
         //세션이 유지되면 로그인으로 이동
         model.addAttribute("member", loginMember);
         return "loginHome";
+    }
+
+    @GetMapping("/")
+    public String homeLoginV3Spring(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loingMember, Model model){
+
+
+        //세션에 회원 데이터가 없으면 home
+        if (loingMember == null) {
+            return "home";
+        }
+
+        //세션이 유지되면 로그인으로 이동
+        model.addAttribute("member", loingMember);
+        return "loginHome";
 
     }
+
 }
